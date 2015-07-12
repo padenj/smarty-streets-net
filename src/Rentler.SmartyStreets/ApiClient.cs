@@ -35,28 +35,45 @@ namespace Rentler.SmartyStreets
 		/// <returns>A proper Uri to be used in a GET or POST request.</returns>
 		public string CreateAddress(string endpoint, Dictionary<string, string> args)
 		{
-			string url = "https://api.smartystreets.com/" + endpoint + "?";
-			string parameters = "";
-
-			var keys = args.Keys.ToArray();
-			for (int i = 0; i < keys.Length; i++)
-				parameters += keys[i] + "=" + Uri.EscapeUriString(args[keys[i]]) + "&";
-
-			parameters = parameters.Replace("#", "");
-			return url + parameters;
+		    string url = "https://api.smartystreets.com/" + endpoint + "?";
+		    return BuildAddress(args, url);
 		}
+        
+        public string CreateExtraction(Dictionary<string, string> args)
+        {
+            string url = "https://extract-beta.api.smartystreets.com/?";
+            return BuildAddress(args, url);
+        }
+	    
+        private static string BuildAddress(Dictionary<string, string> args, string url)
+	    {
+	        string parameters = "";
 
-		public async Task<Stream> Get(string url)
+	        var keys = args.Keys.ToArray();
+	        for (int i = 0; i < keys.Length; i++)
+	            parameters += keys[i] + "=" + Uri.EscapeUriString(args[keys[i]]) + "&";
+
+	        parameters = parameters.Replace("#", "");
+	        return url + parameters;
+	    }
+        
+	    public async Task<Stream> Get(string url)
 		{
 			var result = await client.GetAsync(url);
 			return await result.Content.ReadAsStreamAsync();
 		}
 
-		public async Task<Stream> Post(string url)
-		{
-			var result = await client.PostAsync(url, null);
-			return await result.Content.ReadAsStreamAsync();
-		}
+        public async Task<Stream> Post(string url)
+        {
+            var result = await client.PostAsync(url, null);
+            return await result.Content.ReadAsStreamAsync();
+        }
+
+        public async Task<Stream> Post(string url, string text)
+        {
+            var result = await client.PostAsync(url, new StringContent(text));
+            return await result.Content.ReadAsStreamAsync();
+        }
 
 		public async Task<string> PostString(string url)
 		{

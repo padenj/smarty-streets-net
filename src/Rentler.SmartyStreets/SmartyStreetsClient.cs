@@ -111,7 +111,18 @@ namespace Rentler.SmartyStreets
 			return obj;
 		}
 
-		/// <summary>
+	    public async Task<SmartyStreetsAddressExtraction> ExtractAddress(string text)
+	    {
+            var args = SetAuth();
+
+            //var url = client.CreateAddress("street-address", args);
+            var url = client.CreateExtraction(args);
+            var response = await client.Post(url, text);
+
+            return JsonSerializer.DeserializeFromStream<SmartyStreetsAddressExtraction>(response);
+	    }
+
+	    /// <summary>
 		/// Handles assignment of the keys necessary to talk to SmartyStreets.
 		/// </summary>
 		/// <param name="dict">A dictionary with any arguments intended to be 
